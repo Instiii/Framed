@@ -6,18 +6,22 @@ export default class TitleScene extends Phaser.Scene {
 
     create() {
 
-        this.add.text(220, 250, 'Gallery Shooter', {
-            fontSize: '40px',
-            fill: '#ffffff'
+        this.add.text(250, 200, 'FRAMED', {
+            fontSize: '48px',
+            fill: '#fff'
         });
 
-        this.add.text(240, 320, 'Press SPACE to Start', {
-            fontSize: '24px',
-            fill: '#ffffff'
-        });
+        this.add.text(220, 300, 'Press SPACE to Start');
 
-        this.input.keyboard.once('keydown-SPACE', () => {
+        this.spaceKey = this.input.keyboard.addKey(
+            Phaser.Input.Keyboard.KeyCodes.SPACE
+        );
+    }
+
+    update() {
+
+        if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
             this.scene.start('GameScene');
-        });
+        }
     }
 }
