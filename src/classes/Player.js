@@ -14,7 +14,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
         // Player stats
         this.speed = 200;
-        this.maxHealth = 300;
+        this.maxHealth = 3;
         this.health = this.maxHealth;
         this.lives = 3;
         this.fireRate = 100;
