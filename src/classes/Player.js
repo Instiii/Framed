@@ -4,6 +4,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
         super(scene, x, y, 'light');
 
+        console.log("PLAYER CLASS CREATED");
+
         // Add player to scene
         scene.add.existing(this);
 
@@ -11,12 +13,14 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         scene.physics.add.existing(this);
 
         // Player stats
-        this.speed = 300;
-        this.maxHealth = 3;
+        this.speed = 200;
+        this.maxHealth = 300;
         this.health = this.maxHealth;
         this.lives = 3;
+        this.fireRate = 100;
+        this.lastShotTime = 0;
 
-        this.setTint(0x0000ff);
+        this.setTint(0x4682b4);
 
         // Keep inside screen
         this.setCollideWorldBounds(true);
@@ -24,7 +28,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
     move(keys) {
         // Stop previous movement
-        this.setVelocity(0);
+        this.setVelocity(0, 0);
         // LEFT
         if (keys.left.isDown) {
             this.setVelocityX(-this.speed);
@@ -42,29 +46,47 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
             this.setVelocityY(this.speed);
         }
     }
+
+    shoot(time) {
+
+        if (time < this.lastShotTime + this.fireRate) return;
+
+        this.lastShotTime = time;
+
+        let bullet = this.scene.playerBullets.create(
+            this.x,
+            this.y - 20,
+            'shock'
+        );
+
+        bullet.setScale(0.2);
+        bullet.setTint(0x66ccff);
+
+        bullet.setVelocity(0, -400);
+        bullet.body.setCircle(5);
+        bullet.body.allowGravity = false;
+        bullet.body.setCollideWorldBounds(false);
+    }
     
 
-    takeDamage() {
-        // subtract 1 hit
-        this.health -= 1;
+    takeDamage(amount = 1) {
 
-        // check if life is lost
+        this.health -= amount;
+
         if (this.health <= 0) {
-            this.lives -= 1;
 
-            if (this.lives > 0) {
-                // reset to full hits for next life
-                this.health = this.maxHealth;
+            this.health = 0;
 
-            } else {
-                // game over state
-                this.health = 0;
-                this.setVelocity(0);
-                this.setActive(false);
-                this.setVisible(false);
-            }
+            this.setVelocity(0, 0);
+            this.setActive(false);
+            this.setVisible(false);
+
+            this.body.enable = false;
+
+            this.scene.scene.start('GameOverScene');
         }
     }
+
     isDead() {
         return this.lives <= 0;
     }
